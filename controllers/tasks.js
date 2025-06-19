@@ -1,20 +1,65 @@
-export const getAllTasks = (req, res) => {
-    res.send('Get all items');
+import Task from '../models/Task.js'
+
+export const getAllTasks = async (req, res) => {
+    try {
+        const tasks = await Task.find({});
+        res.status(200).json({tasks});
+    } catch (error) {
+        res.status(500).json({msg: error});
+    }
 }
 
-export const createTask = (req, res) => {
-    res.json(req.body);
+export const createTask = async (req, res) => {
+    try {
+        const task = await Task.create(req.body)
+        res.status(201).json({task});
+    } catch (error) {
+        res.status(500).json({msg: error})
+    }
 }
 
-export const getTask = (req, res) => {
-    res.json({ id: req.params.id});
+export const getTask = async (req, res) => {
+    try {
+        const { id: taskID } = req.params;
+        const task = await Task.findOne({ _id: taskID });
+        if (!task) {
+            return res.status(404).json({ msg: `No task with id: ${taskID}`});
+        }
+
+        res.status(200).json({ task }); 
+    } catch (error) {
+        res.status(500).json({ msg: error });
+    }
 }
 
-export const updateTask = (req, res) => {
-    res.send('Update task.');
+export const updateTask = async (req, res) => {
+    try {
+        const {id: taskID} = req.params;
+
+        const task = await Task.findOneAndUpdate({_id: taskID}, req.body, {
+            new: true,
+            runValidators: true
+        });
+        if (!task) {
+            return res.status(404).json({ msg: `No task with id: ${taskID}`});
+        }
+
+        res.status(200).json({task});
+    } catch (error) {
+        res.status(500).json({ msg: error });
+    }
 }
 
-export const delateTask = (req, res) => {
-    res.send('Delate task.');
+export const deleteTask = async (req, res) => {
+    try {
+        const { id: taskID } = req.params;
+        const task = await Task.findOneAndDelete({_id: taskID});
+        if (!task) {
+            return res.status(404).json({ msg: `No task with id: ${taskID}`});
+        }
+        res.status(200).json(task);
+    } catch (error) {
+        res.status(500).json({ msg: error });
+    }
 }
 
