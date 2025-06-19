@@ -4,6 +4,7 @@ import tasks from './routes/tasks.js';
 import { connectDB } from './db/connect.js';
 import dotenv from 'dotenv';
 dotenv.config();
+import notFound from './middleware/not-found.js';
 
 
 // middleware
@@ -13,6 +14,7 @@ app.use(express.json());
 // routes
 app.use('/api/v1/tasks', tasks);
 
+app.use(notFound);
 
 const PORT = 3000;
 
